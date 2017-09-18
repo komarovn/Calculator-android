@@ -5,28 +5,31 @@ public class State {
     private Operand rightValue = new Operand();
     private Operation operation = Operation.NONE;
 
-    public void addSymbol(String symbol) {
+    public boolean addSymbol(String symbol) {
         if (CalculatorUtils.containsOperationSign(symbol)) {
-            processOperation(Operation.parse(symbol));
+            return processOperation(Operation.parse(symbol));
         } else if (CalculatorUtils.SEPARATOR_SIGN.equals(symbol)) {
             processSeparator();
         } else if (CalculatorUtils.NUMBER_VALUES.contains(symbol)) {
             processNumber(Integer.valueOf(symbol));
         }
+        return true;
     }
 
-    private void processOperation(Operation operation) {
+    private boolean processOperation(Operation operation) {
+        boolean isProcessed = true;
         if (operation == Operation.ROOT) {
-            processExpression();
+            isProcessed = processExpression();
         }
         if (!leftValue.isEmpty()) {
             if (rightValue.isEmpty()) {
                 setOperation(operation);
             } else {
-                processExpression();
+                isProcessed = processExpression();
                 setOperation(operation);
             }
         }
+        return isProcessed;
     }
 
     private void processSeparator() {
@@ -87,30 +90,31 @@ public class State {
         }
     }
 
-    public void processExpression() {
+    public boolean processExpression() {
         Double result = 0.0;
-        switch (operation) {
-            case ADDITION:
-                result = processAddition();
-                break;
-            case SUBTRACTION:
-                result = processSubtraction();
-                break;
-            case MULTIPLICATION:
-                result = processMultiplication();
-                break;
-            case DIVISION:
-                result = processDivision();
-                break;
-            case ROOT:
-                result = processRoot();
-                break;
-        }
+        try {
+            switch (operation) {
+                case ADDITION:
+                    result = processAddition();
+                    break;
+                case SUBTRACTION:
+                    result = processSubtraction();
+                    break;
+                case MULTIPLICATION:
+                    result = processMultiplication();
+                    break;
+                case DIVISION:
+                    result = processDivision();
+                    break;
+                case ROOT:
+                    result = processRoot();
+                    break;
+            }
 
-        String val = result.toString();
-        Integer intPart = result.intValue(); //Integer.valueOf(val.substring(0, val.indexOf(CalculatorUtils.SEPARATOR_SIGN)));
-        Integer fracPart = Integer.valueOf(val.substring(val.indexOf(CalculatorUtils.SEPARATOR_SIGN) + 1));
-        //if (leftValue.isDecimal() || rightValue.isDecimal() || fracPart.equals(0)) {
+            String val = result.toString();
+            Integer intPart = result.intValue(); //Integer.valueOf(val.substring(0, val.indexOf(CalculatorUtils.SEPARATOR_SIGN)));
+            Integer fracPart = Integer.valueOf(val.substring(val.indexOf(CalculatorUtils.SEPARATOR_SIGN) + 1));
+            //if (leftValue.isDecimal() || rightValue.isDecimal() || fracPart.equals(0)) {
             leftValue.setDecimal(!fracPart.equals(0));
             leftValue.setIntPart(intPart);
             leftValue.setFracPart(fracPart);
@@ -119,8 +123,13 @@ public class State {
             leftValue.setIntPart(intPart);
             leftValue.setFracPart(0);
         }*/
-        rightValue = new Operand();
-        setOperation(Operation.NONE);
+            rightValue = new Operand();
+            setOperation(Operation.NONE);
+        } catch (Exception e) {
+            clear();
+            return false;
+        }
+        return true;
     }
 
     private Double processAddition() {

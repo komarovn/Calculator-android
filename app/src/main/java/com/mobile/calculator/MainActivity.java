@@ -187,22 +187,21 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                state.processExpression();
-                updateResult();
-                /*if (!(state.getOperation() == Operation.NONE)) {
-                    if (state.getRightValue().equals(0.0)) {
-                        removeSymbol();
-                    } else {
-                        //calculate
-                    }
-                }*/
+                if (!state.processExpression()) {
+                    resultTextBox.setText(CalculatorUtils.INCORRECT_INPUT);
+                } else {
+                    updateResult();
+                }
             }
         });
     }
 
     private void addSymbol(String symbol) {
-        state.addSymbol(symbol);
-        updateResult();
+        if (!state.addSymbol(symbol)) {
+            resultTextBox.setText(CalculatorUtils.INCORRECT_INPUT);
+        } else {
+            updateResult();
+        }
 
         /*if (CalculatorUtils.containsOperationSign(symbol)) {
             if (!state.isEmpty()) {
