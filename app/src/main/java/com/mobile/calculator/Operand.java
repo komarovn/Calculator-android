@@ -22,7 +22,7 @@ public class Operand {
     }
 
     public boolean isEmpty() {
-        return intPart.equals(0) && fracPart.equals(0);
+        return intPart.equals(0) && fracPart.equals(0) && !isDecimal();
     }
 
     public Double getValue() {
@@ -41,11 +41,33 @@ public class Operand {
         }
     }
 
+    public void removeSymbol() {
+        if (fracPart.equals(0)) {
+            if (isDecimal) {
+                setDecimal(false);
+            } else {
+                setIntPart(removeLastDigit(intPart));
+            }
+        } else {
+            setFracPart(removeLastDigit(fracPart));
+        }
+    }
+
+    private Integer removeLastDigit(Integer val) {
+        String view = val.toString();
+        view = view.substring(0, view.length() - 1);
+        if (view.isEmpty() || "-".equals(view)) {
+            return 0;
+        } else {
+            return Integer.valueOf(view);
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder(intPart.toString());
         if (isDecimal) {
-            result.append(".");
+            result.append(CalculatorUtils.SEPARATOR_SIGN);
             if (!fracPart.equals(0)) {
                 result.append(fracPart);
             }

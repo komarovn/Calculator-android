@@ -19,9 +19,9 @@ public class State {
     private boolean processOperation(Operation operation) {
         boolean isProcessed = true;
         if (operation == Operation.ROOT) {
+            setOperation(Operation.ROOT);
             isProcessed = processExpression();
-        }
-        if (!leftValue.isEmpty()) {
+        } else if (!leftValue.isEmpty()) {
             if (rightValue.isEmpty()) {
                 setOperation(operation);
             } else {
@@ -50,8 +50,16 @@ public class State {
         }
     }
 
-    public Operation getOperation() {
-        return operation;
+    public void removeSymbol() {
+        if (operation != Operation.NONE) {
+            if (rightValue.isEmpty()) {
+                setOperation(Operation.NONE);
+            } else {
+                rightValue.removeSymbol();
+            }
+        } else {
+            leftValue.removeSymbol();
+        }
     }
 
     public void setOperation(Operation operation) {
@@ -118,11 +126,6 @@ public class State {
             leftValue.setDecimal(!fracPart.equals(0));
             leftValue.setIntPart(intPart);
             leftValue.setFracPart(fracPart);
-       /* } else {
-            leftValue.setDecimal(false);
-            leftValue.setIntPart(intPart);
-            leftValue.setFracPart(0);
-        }*/
             rightValue = new Operand();
             setOperation(Operation.NONE);
         } catch (Exception e) {

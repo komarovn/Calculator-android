@@ -13,7 +13,6 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Button> numberButtons = new ArrayList<Button>();
     private TextView resultTextBox;
-    private String viewValue = CalculatorUtils.EMPTY_VALUE;
     private State state = new State();
 
     @Override
@@ -80,9 +79,6 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*if (!viewValue.contains(CalculatorUtils.SEPARATOR_SIGN)) {
-                    addSymbol(CalculatorUtils.SEPARATOR_SIGN);
-                }*/
                 addSymbol(CalculatorUtils.SEPARATOR_SIGN);
             }
         });
@@ -92,20 +88,6 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*if (state.getRightValue().equals(0.0)) {
-                    state.setLeftValue(state.getLeftValue() * (-1));
-                } else {
-                    state.setRightValue(state.getRightValue() * (-1));
-                }
-                updateResult();*/
-                /*if (!CalculatorUtils.isEmpty(viewValue) && state.getOperation() != Operation.SUBTRACTION) {
-                    if (CalculatorUtils.containsNegateSign(viewValue)) {
-                        viewValue = viewValue.substring(1, viewValue.length());
-                    } else {
-                        viewValue = "-" + viewValue;
-                    }
-                    updateResult();
-                }*/
                 state.negate();
                 updateResult();
             }
@@ -116,9 +98,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!CalculatorUtils.isEmpty(viewValue)) {
-                    removeSymbol();
-                }
+                removeSymbol();
             }
         });
     }
@@ -127,10 +107,6 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*viewValue = CalculatorUtils.EMPTY_VALUE;
-                state.setLeftValue(0.0);
-                state.setRightValue(0.0);
-                state.setOperation(Operation.NONE);*/
                 state.clear();
                 updateResult();
             }
@@ -141,43 +117,6 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*switch (operation) {
-                    case ADDITION:
-                        if (state.getOperation() != Operation.NONE) {
-                            if (!state.getRightValue().equals(0.0)) {
-                                //calculate
-                            } else {
-                                state.setOperation(operation);
-                                removeSymbol();
-                                addSymbol(operation.toString());
-                            }
-                        } else {
-                            state.setOperation(operation);
-                            addSymbol(operation.toString());
-                        }
-                        state.setOperation(operation);
-                        if (!CalculatorUtils.containsOperationSign(viewValue)) {
-                            addSymbol(operation.toString());
-                        }
-                        break;
-                    case SUBTRACTION:
-                        if (!CalculatorUtils.containsOperationSign(viewValue)) {
-                            addSymbol("-");
-                        }
-                        break;
-                    case MULTIPLICATION:
-                        if (!CalculatorUtils.containsOperationSign(viewValue)) {
-                            addSymbol("*");
-                        }
-                        break;
-                    case DIVISION:
-                        if (!CalculatorUtils.containsOperationSign(viewValue)) {
-                            addSymbol("/");
-                        }
-                        break;
-                    case ROOT:
-                        break;
-                }*/
                 addSymbol(operation.toString());
             }
         });
@@ -188,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!state.processExpression()) {
-                    resultTextBox.setText(CalculatorUtils.INCORRECT_INPUT);
+                    processIncorrectInput();
                 } else {
                     updateResult();
                 }
@@ -198,59 +137,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void addSymbol(String symbol) {
         if (!state.addSymbol(symbol)) {
-            resultTextBox.setText(CalculatorUtils.INCORRECT_INPUT);
+            processIncorrectInput();
         } else {
             updateResult();
         }
-
-        /*if (CalculatorUtils.containsOperationSign(symbol)) {
-            if (!state.isEmpty()) {
-                state.setOperation(Operation.parse(symbol));
-            }
-        } else if (CalculatorUtils.SEPARATOR_SIGN.equals(symbol)) {
-            if (state.getRightValue().equals(0.0)) {
-
-            }
-        } else {
-            StringBuilder result = new StringBuilder();
-
-            if (state.getOperation() == Operation.NONE) {
-                if (!state.getLeftValue().equals(0.0)) {
-                    result.append(String.valueOf(state.getLeftValue()));
-                }
-                if (CalculatorUtils.NUMBER_VALUES.contains(symbol)) {
-                    result.append(symbol);
-                }
-                state.setLeftValue(Double.valueOf(result.toString()));
-            }
-
-            if (!CalculatorUtils.isEmpty(viewValue) || symbol.equals(CalculatorUtils.SEPARATOR_SIGN)) {
-                result.append(viewValue);
-            }
-            result.append(symbol);
-            viewValue = result.toString();
-            updateResult();
-        }*/
     }
 
     private void removeSymbol() {
-        if (!CalculatorUtils.isEmpty(viewValue)) {
-            if (viewValue.length() > 1) {
-                if (viewValue.length() == 2 && CalculatorUtils.containsNegateSign(viewValue)) {
-                    viewValue = CalculatorUtils.EMPTY_VALUE;
-                } else {
-                    viewValue = viewValue.substring(0, viewValue.length() - 1);
-                }
-            } else {
-                viewValue = CalculatorUtils.EMPTY_VALUE;
-            }
-        }
+        state.removeSymbol();
         updateResult();
     }
 
     public void updateResult() {
         if (this.resultTextBox == null) return;
-        //this.resultTextBox.setText(viewValue);
         this.resultTextBox.setText(state.getViewValue());
     }
 
