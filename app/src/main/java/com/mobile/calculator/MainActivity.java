@@ -98,7 +98,12 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeSymbol();
+                if (CalculatorUtils.INCORRECT_INPUT.equals(resultTextBox.getText())) {
+                    state.clear();
+                    updateResult();
+                } else {
+                    removeSymbol();
+                }
             }
         });
     }

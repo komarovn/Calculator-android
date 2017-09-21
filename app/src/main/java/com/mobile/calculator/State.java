@@ -36,9 +36,9 @@ public class State {
         if (operation == Operation.NONE) {
             leftValue.setDecimal(true);
         } else {
-            if (!rightValue.isEmpty()) {
+            //if (!rightValue.isEmpty()) {
                 rightValue.setDecimal(true);
-            }
+            //}
         }
     }
 
@@ -99,7 +99,7 @@ public class State {
     }
 
     public boolean processExpression() {
-        Double result = 0.0;
+        Double result = leftValue.getValue();
         try {
             switch (operation) {
                 case ADDITION:
@@ -117,6 +117,12 @@ public class State {
                 case ROOT:
                     result = processRoot();
                     break;
+            }
+
+            if (result.equals(Double.NaN) ||
+                    result.equals(Double.POSITIVE_INFINITY) ||
+                    result.equals(Double.NEGATIVE_INFINITY)) {
+                throw new Exception();
             }
 
             leftValue.setValue(result);
