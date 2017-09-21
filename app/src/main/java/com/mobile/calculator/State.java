@@ -119,13 +119,7 @@ public class State {
                     break;
             }
 
-            String val = result.toString();
-            Integer intPart = result.intValue(); //Integer.valueOf(val.substring(0, val.indexOf(CalculatorUtils.SEPARATOR_SIGN)));
-            Integer fracPart = Integer.valueOf(val.substring(val.indexOf(CalculatorUtils.SEPARATOR_SIGN) + 1));
-            //if (leftValue.isDecimal() || rightValue.isDecimal() || fracPart.equals(0)) {
-            leftValue.setDecimal(!fracPart.equals(0));
-            leftValue.setIntPart(intPart);
-            leftValue.setFracPart(fracPart);
+            leftValue.setValue(result);
             rightValue = new Operand();
             setOperation(Operation.NONE);
         } catch (Exception e) {

@@ -1,16 +1,12 @@
 package com.mobile.calculator;
 
 public class Operand {
-    private Integer intPart = 0;
-    private Integer fracPart = 0;
+    private Double value = 0.0;
     private boolean isDecimal = false;
 
-    public void setIntPart(Integer intPart) {
-        this.intPart = intPart;
-    }
-
-    public void setFracPart(Integer fracPart) {
-        this.fracPart = fracPart;
+    public void setValue(Double value) {
+        this.value = value;
+        this.isDecimal = !isFractionalPartEmpty();
     }
 
     public boolean isDecimal() {
@@ -22,55 +18,54 @@ public class Operand {
     }
 
     public boolean isEmpty() {
-        return intPart.equals(0) && fracPart.equals(0) && !isDecimal();
+        return value.equals(0.0) && !isDecimal();
     }
 
     public Double getValue() {
-        return Double.valueOf(toString());
+        return value;
     }
 
     public void negate() {
-        this.intPart = this.intPart * (-1);
+        this.value = this.value * (-1);
     }
 
     public void addNumber(int number) {
-        if (isDecimal) {
-            fracPart = Integer.valueOf(String.valueOf(fracPart) + String.valueOf(number));
-        } else {
-            intPart = Integer.valueOf(String.valueOf(intPart) + String.valueOf(number));
-        }
+        value = isDecimal ? Double.valueOf(String.valueOf(value.intValue()) + CalculatorUtils.SEPARATOR_SIGN + (isFractionalPartEmpty() ? "" : String.valueOf(getFractionalPart())) + String.valueOf(number)) :
+                Double.valueOf(String.valueOf(value.intValue()) + String.valueOf(number));
     }
 
     public void removeSymbol() {
-        if (fracPart.equals(0)) {
-            if (isDecimal) {
-                setDecimal(false);
-            } else {
-                setIntPart(removeLastDigit(intPart));
-            }
+        String view = toString();
+        view = view.substring(0, view.length() - 1);
+        setDecimal(view.contains(CalculatorUtils.SEPARATOR_SIGN));
+        if (view.isEmpty() || "-".equals(view)) {
+            value = 0.0;
         } else {
-            setFracPart(removeLastDigit(fracPart));
+            value = Double.valueOf(view);
         }
     }
 
-    private Integer removeLastDigit(Integer val) {
-        String view = val.toString();
-        view = view.substring(0, view.length() - 1);
-        if (view.isEmpty() || "-".equals(view)) {
-            return 0;
-        } else {
-            return Integer.valueOf(view);
-        }
+    private boolean isFractionalPartEmpty() {
+        return getFractionalPart().equals(CalculatorUtils.NUMBER_VALUES.get(0));
+    }
+
+    private String getFractionalPart() {
+        String val = value.toString();
+        return val.substring(val.indexOf(CalculatorUtils.SEPARATOR_SIGN) + 1);
     }
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(intPart.toString());
+        StringBuilder result = new StringBuilder();
         if (isDecimal) {
-            result.append(CalculatorUtils.SEPARATOR_SIGN);
-            if (!fracPart.equals(0)) {
-                result.append(fracPart);
+            if (isFractionalPartEmpty()) {
+                result.append(String.valueOf(value.intValue()));
+                result.append(CalculatorUtils.SEPARATOR_SIGN);
+            } else {
+                result.append(value.toString());
             }
+        } else {
+            result.append(String.valueOf(value.intValue()));
         }
         return result.toString();
     }
